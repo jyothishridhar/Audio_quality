@@ -1,0 +1,3 @@
+web: setup.bat && streamlit run run.py
+opencv-python-headless==4.5.3.56
+
