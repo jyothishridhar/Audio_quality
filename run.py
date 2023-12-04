@@ -95,8 +95,8 @@ def plot_audio_with_issue(samples, issue_position, issue_label, output_folder, f
     print(f"Plot saved to {plot_filename}")
 
 # Example paths
-original_audio_path =  r"C:\Project_Audio\Audio_Quality\referance_audio.wav"
-distorted_audio_path = r"C:\Project_Audio\Audio_Quality\distorted_audio.wav"
+original_audio_path =  r"C:\OTT_audio_quality_streamlit\referance_audio.wav"
+distorted_audio_path = r"C:\OTT_audio_quality_streamlit\distorted_audio.wav"
 
 # Extract samples from audio
 original_samples = extract_samples(original_audio_path)
@@ -106,8 +106,8 @@ distorted_samples = extract_samples(distorted_audio_path)
 results_for_frames = []
 
 # Output folders
-original_output_folder = r"C:\OTT_PROJECT\audio_testing\audio_quality\original_plots"
-distorted_output_folder = r"C:\OTT_PROJECT\audio_testing\audio_quality\distorted_plots"
+original_output_folder = r"C:\OTT_audio_quality_streamlit\original_plots"
+distorted_output_folder = r"C:\OTT_audio_quality_streamlit\distorted_plots"
 
 # Sample rate
 sample_rate = 44100
@@ -138,6 +138,6 @@ for i in range(0, min(len(original_samples), len(distorted_samples)), frame_size
 # Create a DataFrame for the report
 report_df = pd.DataFrame(results_for_frames)
 
-excel_file = r"C:\OTT_PROJECT\audio_testing\audio_quality\audio_quality_report_for_frames.xlsx"
+excel_file = r"C:\OTT_audio_quality_streamlit\audio_quality_report_for_frames.xlsx"
 report_df.to_excel(excel_file, index=False)
 print(f"Report saved to {excel_file}")
