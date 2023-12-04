@@ -95,7 +95,7 @@ def plot_audio_with_issue(samples, issue_position, issue_label, output_folder, f
     print(f"Plot saved to {plot_filename}")
 
 # Example paths
-original_audio_path =  r"C:\Project_Audio\Audio_Quality\referance_video.wav"
+original_audio_path =  r"C:\Project_Audio\Audio_Quality\referance_audio.wav"
 distorted_audio_path = r"C:\Project_Audio\Audio_Quality\distorted_audio.wav"
 
 # Extract samples from audio
