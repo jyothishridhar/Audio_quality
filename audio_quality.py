@@ -10,7 +10,7 @@ import tempfile
 
 # Function to extract samples from audio file
 def extract_samples(audio_content):
-    audio = AudioSegment.from_file(io.BytesIO(audio_content))
+    audio = AudioSegment.from_file(io.BytesIO(audio_content), format="wav", codec="ffmpeg")
     return np.array(audio.get_array_of_samples())
 
 
