@@ -150,8 +150,8 @@ if st.button("Run Audio Quality Analysis"):
             'Start Time (seconds)': i / sample_rate,  # Adjust the sample rate as needed
             'End Time (seconds)': (i + frame_size) / sample_rate,
             'Glitch Status (Original)': glitch_status_original,
-            'Glitch Status (Distorted)': glitch_status_distorted,
             'Glitch Stats (Original)': glitch_stats_original,
+            'Glitch Status (Distorted)': glitch_status_distorted,
             'Glitch Stats (Distorted)': glitch_stats_distorted,
             'Plot (Original)': plot_filename_original,
             'Plot (Distorted)': plot_filename_distorted,
