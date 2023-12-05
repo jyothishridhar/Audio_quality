@@ -31,13 +31,13 @@ def evaluate_audio_quality_for_frame(samples, frame_index, frame_size, output_fo
         if audio_features['Max Amplitude'] < 0:
             dropout_position = np.argmax(samples < 0)
             plot_filename = plot_audio_with_issue(samples, dropout_position, "Audio_dropout", output_folder, frame_index, sample_rate)
-            return f"Audio dropout detected at {dropout_position} samples", glitch_stats, audio_features, plot_filename
+            return f"Audio dropout detected at {dropout_position} samples", "Glitch", glitch_stats, audio_features, plot_filename
 
         # Check for clipping/distortion
         if audio_features['Max Amplitude'] >= 32767:
             clipping_position = np.argmax(np.abs(samples) >= 32000)
             plot_filename = plot_audio_with_issue(samples, clipping_position, "Audio_distortion", output_folder, frame_index, sample_rate)
-            return f"Audio distortion detected at {clipping_position} samples", glitch_stats, audio_features, plot_filename
+            return f"Audio distortion detected at {clipping_position} samples", "Glitch", glitch_stats, audio_features, plot_filename
 
         # Check for consistent amplitude (glitches)
         amplitude_std = np.std(samples)
@@ -50,14 +50,14 @@ def evaluate_audio_quality_for_frame(samples, frame_index, frame_size, output_fo
             glitch_stats['Mean'] = np.mean(glitch_samples)
             glitch_stats['Std'] = np.std(glitch_samples)
 
-            return f"Audio glitch detected at {glitch_position} samples", glitch_stats, audio_features, plot_filename
+            return f"Audio glitch detected at {glitch_position} samples", "Glitch", glitch_stats, audio_features, plot_filename
 
         # If audio quality is good, plot the audio waveform
         plot_filename = plot_audio(samples, "Good_Audio_Quality", output_folder, frame_index, sample_rate)
-        return "Audio quality is good", glitch_stats, audio_features, plot_filename
+        return "Audio quality is good", "No Glitch", glitch_stats, audio_features, plot_filename
 
     except Exception as e:
-        return f"Error: {str(e)}", glitch_stats, None, None
+        return f"Error: {str(e)}", "Error", glitch_stats, None, None
 
 def plot_audio(samples, issue_label, output_folder, frame_index, sample_rate):
     public_folder = "public_plots"
@@ -138,17 +138,19 @@ if st.button("Run Audio Quality Analysis"):
         original_frame_samples = original_samples[i:i + frame_size]
         distorted_frame_samples = distorted_samples[i:i + frame_size]
 
-        result_original, glitch_stats_original, audio_features_original, plot_filename_original = evaluate_audio_quality_for_frame(
+        result_original, glitch_status_original, glitch_stats_original, audio_features_original, plot_filename_original = evaluate_audio_quality_for_frame(
             original_frame_samples, i, frame_size, original_output_folder, sample_rate
         )
 
-        result_distorted, glitch_stats_distorted, audio_features_distorted, plot_filename_distorted = evaluate_audio_quality_for_frame(
+        result_distorted, glitch_status_distorted, glitch_stats_distorted, audio_features_distorted, plot_filename_distorted = evaluate_audio_quality_for_frame(
             distorted_frame_samples, i, frame_size, distorted_output_folder, sample_rate
         )
 
         results_for_frames.append({
             'Start Time (seconds)': i / sample_rate,  # Adjust the sample rate as needed
             'End Time (seconds)': (i + frame_size) / sample_rate,
+            'Glitch Status (Original)': glitch_status_original,
+            'Glitch Status (Distorted)': glitch_status_distorted,
             'Glitch Stats (Original)': glitch_stats_original,
             'Glitch Stats (Distorted)': glitch_stats_distorted,
             'Plot (Original)': plot_filename_original,
