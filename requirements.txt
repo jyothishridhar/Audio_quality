@@ -5,3 +5,4 @@ opencv-python-headless==4.8.1.78
 pydub==0.25.1
 streamlit==1.28.2
 matplotlib
+ffmpeg==4.0.2
