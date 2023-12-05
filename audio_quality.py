@@ -8,7 +8,7 @@ import requests
 import io
 import tempfile
 
-# Function to extract samples from audio file
+# Function to extract samples from the audio file
 def extract_samples(audio_content):
     audio = AudioSegment.from_file(io.BytesIO(audio_content), format="wav", codec="ffmpeg")
     return np.array(audio.get_array_of_samples())
@@ -159,4 +159,16 @@ if st.button("Run Audio Quality Analysis"):
     report_df = pd.DataFrame(results_for_frames)
 
     # Save the report to a temporary file
-    excel_file = os.path.join(tempfile.gettempdir(),
+    excel_file = os.path.join(tempfile.gettempdir(), "audio_quality_report_for_frames.xlsx")
+    report_df.to_excel(excel_file, index=False)
+    print(f"Report saved to {excel_file}")
+
+    # Display the result on the app
+    st.success("Audio quality analysis completed! Result:")
+
+    # Display the DataFrame
+    st.dataframe(report_df)
+
+    # Add download link for the report
+    st.markdown(f"**Download Audio Quality Report**")
+    st.markdown(f"[Click here to download the Audio Quality Report Excel]({excel_file})")
