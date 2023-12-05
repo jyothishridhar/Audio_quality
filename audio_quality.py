@@ -9,9 +9,10 @@ import io
 import tempfile
 
 # Function to extract samples from audio file
-def extract_samples(audio_path):
-    audio = AudioSegment.from_file(audio_path)
+def extract_samples(audio_content):
+    audio = AudioSegment.from_file(io.BytesIO(audio_content))
     return np.array(audio.get_array_of_samples())
+
 
 # Function to calculate audio features
 def calculate_audio_features(samples):
@@ -117,8 +118,9 @@ st.markdown(f"**Download Distorted Audio**")
 st.markdown(f"[Click here to download the Distorted Audio]({distorted_audio_url})")
 
 if st.button("Run Audio Quality Analysis"):
-    original_samples = extract_samples(io.BytesIO(original_audio_content))
-    distorted_samples = extract_samples(io.BytesIO(distorted_audio_content))
+    original_samples = extract_samples(original_audio_content)
+    distorted_samples = extract_samples(distorted_audio_content)
+
 
     # List to store results for each frame
     results_for_frames = []
