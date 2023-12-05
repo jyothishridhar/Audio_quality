@@ -169,6 +169,15 @@ if st.button("Run Audio Quality Analysis"):
     # Display the DataFrame
     st.dataframe(report_df)
 
+    # Display glitch plots
+    st.markdown("### Glitch Plots (Original)")
+    for i, plot_filename_original in enumerate(report_df['Plot (Original)']):
+        st.image(plot_filename_original, f"Glitch Plot (Original) {i}")
+
+    st.markdown("### Glitch Plots (Distorted)")
+    for i, plot_filename_distorted in enumerate(report_df['Plot (Distorted)']):
+        st.image(plot_filename_distorted, f"Glitch Plot (Distorted) {i}")
+
     # Add download link for the report
     st.markdown(f"**Download Audio Quality Report**")
     st.markdown(f"[Click here to download the Audio Quality Report Excel]({excel_file})")
