@@ -1,8 +1,11 @@
-import os
+import streamlit as st
 import pandas as pd
 from pydub import AudioSegment
 import numpy as np
 import matplotlib.pyplot as plt
+import tempfile
+import os
+import io
 
 # Function to extract samples from audio file
 def extract_samples(audio_path):
@@ -72,6 +75,8 @@ def plot_audio(samples, issue_label, output_folder, frame_index, sample_rate):
     plt.savefig(plot_filename)
     plt.close()
 
+    st.image(plot_filename, caption=f"Audio_Waveform_{issue_label}_{frame_index}", use_column_width=True)
+
     print(f"Plot saved to {plot_filename}")
 
 def plot_audio_with_issue(samples, issue_position, issue_label, output_folder, frame_index, sample_rate):
@@ -92,52 +97,44 @@ def plot_audio_with_issue(samples, issue_position, issue_label, output_folder, f
     plt.savefig(plot_filename)
     plt.close()
 
+    st.image(plot_filename, caption=f"Audio_Waveform_{issue_label}_{frame_index}", use_column_width=True)
+
     print(f"Plot saved to {plot_filename}")
 
-# Example paths
-original_audio_path =  r"C:\OTT_audio_quality_streamlit\referance_audio.wav"
-distorted_audio_path = r"C:\OTT_audio_quality_streamlit\distorted_audio.wav"
+def download_audio(url):
+    response = requests.get(url)
+    return io.BytesIO(response.content)
 
-# Extract samples from audio
-original_samples = extract_samples(original_audio_path)
-distorted_samples = extract_samples(distorted_audio_path)
+# Streamlit app code
+st.title("Audio Quality Assessment Demo")
 
-# List to store results for each frame
-results_for_frames = []
+# Git LFS URLs for the audio files
+original_audio_url = "https://github.com/jyothishridhar/audio_quality/raw/main/referance_audio.wav"
+distorted_audio_url = "https://github.com/jyothishridhar/audio_quality/raw/main/distorted_audio.wav"
 
-# Output folders
-original_output_folder = r"C:\OTT_audio_quality_streamlit\original_plots"
-distorted_output_folder = r"C:\OTT_audio_quality_streamlit\distorted_plots"
+# Download audio
+original_audio_content = download_audio(original_audio_url)
+distorted_audio_content = download_audio(distorted_audio_url)
 
-# Sample rate
-sample_rate = 44100
+# Add download links
+st.markdown(f"**Download Original Audio**")
+st.markdown(f"[Click here to download the Original Audio]({original_audio_url})")
 
-# Evaluate audio quality for each frame
-frame_size = int(sample_rate * 0.1)  # 100 milliseconds (adjust sample rate as needed)
-for i in range(0, min(len(original_samples), len(distorted_samples)), frame_size):
-    original_frame_samples = original_samples[i:i + frame_size]
-    distorted_frame_samples = distorted_samples[i:i + frame_size]
+st.markdown(f"**Download Distorted Audio**")
+st.markdown(f"[Click here to download the Distorted Audio]({distorted_audio_url})")
 
-    result_original, glitch_stats_original, audio_features_original = evaluate_audio_quality_for_frame(
-        original_frame_samples, i, frame_size, original_output_folder, sample_rate
-    )
+if st.button("Run Audio Quality Assessment"):
+    original_overlay_frames = detect_overlay(original_audio_content)
+    distorted_overlay_frames = detect_overlay(distorted_audio_content)
 
-    result_distorted, glitch_stats_distorted, audio_features_distorted = evaluate_audio_quality_for_frame(
-        distorted_frame_samples, i, frame_size, distorted_output_folder, sample_rate
-    )
+    overlay_df, csv_report_path = generate_overlay_reports(original_overlay_frames, distorted_overlay_frames)
 
-    results_for_frames.append({
-        'Start Time (seconds)': i / sample_rate,  # Adjust the sample rate as needed
-        'End Time (seconds)': (i + frame_size) / sample_rate,
-        'Glitch Stats (Original)': glitch_stats_original,
-#         'Audio Features (Original_Audio)': audio_features_original,
-        'Glitch Stats (Distorted)': glitch_stats_distorted,
-#          'Audio Features (Voice_absent_Audio)': audio_features_distorted,
-    })
+    # Display the result on the app
+    st.success("Audio quality assessment completed! Result:")
 
-# Create a DataFrame for the report
-report_df = pd.DataFrame(results_for_frames)
+    # Display the DataFrame
+    st.dataframe(overlay_df)
 
-excel_file = r"C:\OTT_audio_quality_streamlit\audio_quality_report_for_frames.xlsx"
-report_df.to_excel(excel_file, index=False)
-print(f"Report saved to {excel_file}")
+    # Add download link for the report
+    st.markdown(f"**Download Audio Quality Report**")
+    st.markdown(f"[Click here to download the Audio Quality Report CSV]({csv_report_path})")
