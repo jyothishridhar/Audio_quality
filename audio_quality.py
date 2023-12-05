@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import tempfile
 import os
 import io
+import requests
 
 # Function to extract samples from audio file
 def extract_samples(audio_path):
